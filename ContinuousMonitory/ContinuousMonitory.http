@@ -1,0 +1,6 @@
+@ContinuousMonitory_HostAddress = http://localhost:5216
+
+GET {{ContinuousMonitory_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
