@@ -1,5 +1,6 @@
 ﻿using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Runtime.CompilerServices;
 
@@ -22,17 +23,32 @@ internal static class Extensions
         });
 
         builder.Services.AddOpenTelemetry()
+            .ConfigureResource(resource => resource.AddService(
+                serviceName: Environment.GetEnvironmentVariable("SERVICE_NAME") ?? builder.Environment.ApplicationName,
+                serviceVersion: System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) // SemVer
+            )
+            .AddAttributes(new Dictionary<string, object>
+                {
+                    { "host.name", Environment.MachineName }
+                })
+            )
             .WithMetrics(configure =>
             {
-                configure.AddRuntimeInstrumentation()
+                configure
+                    //.AddRuntimeInstrumentation()
                     .AddMeter(
                         "Microsoft.AspNetCore.Hosting",
                         "Microsoft.AspNetCore.Server.Kestrel",
-                        "System.Net.Http")
+                        "System.Net.Http",
+                        DiagnosticConfiguration.Meter.Name)
                     .AddAspNetCoreInstrumentation()
                     .AddProcessInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddPrometheusExporter();
+                    .AddPrometheusExporter(configure =>
+                    {
+                        // Added so that we can add instruments for Runtime but it still fails after a while
+                        configure.DisableTotalNameSuffixForCounters = true;
+                    });
             })
             .WithTracing(configure =>
             {
@@ -55,7 +71,9 @@ internal static class Extensions
                     {
                         configure.SetDbStatementForText = true;
                     })
-                    .AddHttpClientInstrumentation();
+                    .AddHttpClientInstrumentation()
+                    .AddSource(DiagnosticConfiguration.SourceName)
+                    .AddConsoleExporter();
             });
 
         builder.AddOpenTelemetryExporters();
