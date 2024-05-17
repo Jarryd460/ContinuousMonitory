@@ -36,6 +36,8 @@ namespace ContinuousMonitory.Controllers
             })
             .ToArray();
 
+            _logger.LogInformation("Weather count from log: {WeatherCount}", weathers.Count());
+
             // Adds an event to the trace with some tags
             activity?.AddEvent(new ActivityEvent("Load Weather",
                 tags: new ActivityTagsCollection(new[] { KeyValuePair.Create<string, object?>("Count", weathers.Count()) })));
