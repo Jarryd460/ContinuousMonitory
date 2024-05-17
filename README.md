@@ -7,6 +7,8 @@ An introduction to Continuous Monitory with logging, metrics and tracing using O
 * OpenTelemetry is an open source standard for capturing metrics about an appLication.
 * Prometheus is an open source software that records metrics in a time series database built using an HTTP pull model, with flexible queries and real-time alerting.
 * Grafana is an open source visualization tool which can be used to view the captured metrics.
+* Loki is an open source log aggregation system designed to store and query logs from all your applications and infrastructure.
+    * It works with Promtail as platform that sends logs to Loki. Loki is the logging engine.
 
 * Install Grafana locally
     * Go to https://grafana.com/grafana/download and download Grafana Enterprise version. 
@@ -21,6 +23,20 @@ An introduction to Continuous Monitory with logging, metrics and tracing using O
     * Using the Prometheus configuration yaml file, copy it to the same directory as Prometheus
     * Run "./prometheus --config.file=prometheus.yml" to start up Prometheus.
     * Navigate to http://localhost:9090 (default url for Prometheus).
+
+* Install Loki and Promtail
+    * Go to https://grafana.com/docs/loki/latest/setup/install/local/ and instal Loki manually by downloading the lastest version off Github.
+        * Download links: 
+            * https://github.com/grafana/loki/releases/download/v2.9.8/loki-windows-amd64.exe.zip
+            * https://github.com/grafana/loki/releases/download/v2.9.8/promtail-windows-amd64.exe.zip
+    * Extract both zips into a singe directory. The name does not matter.
+    * Copy and paste the commands below into your command line to download generic configuration files. Use the corresponding Git refs that match 
+    your downloaded Loki version to get the correct configuration file. For example, if you are using Loki version 2.9.2, you need to use the 
+    https://raw.githubusercontent.com/grafana/loki/v2.9.2/cmd/loki/loki-local-config.yaml URL to download the configuration file that corresponds 
+    to the Loki version you aim to run.
+    * Run ".\loki-windows-amd64.exe --config.file=loki-local-config.yaml" to start Loki
+    * Run ".\promtail-windows-amd64.exe --config.file=promtail-local-config.yaml" to start Promtail
+    * You can also follow the instructions on https://grafana.com/docs/loki/latest/setup/install/local/.
 
 ### ContinuousMonitory
 

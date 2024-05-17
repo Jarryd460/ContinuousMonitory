@@ -2,7 +2,7 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using System.Runtime.CompilerServices;
+using Serilog;
 
 namespace ContinuousMonitory;
 
@@ -17,9 +17,14 @@ internal static class Extensions
 
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddSerilog(configure => 
+        {
+            configure.ReadFrom.Configuration(builder.Configuration);
+        });
+
         builder.Logging.AddOpenTelemetry(configure => {
             configure.IncludeScopes = true;
-            configure.IncludeFormattedMessage = true; 
+            configure.IncludeFormattedMessage = true;
         });
 
         builder.Services.AddOpenTelemetry()
@@ -35,7 +40,7 @@ internal static class Extensions
             .WithMetrics(configure =>
             {
                 configure
-                    //.AddRuntimeInstrumentation()
+                    .AddRuntimeInstrumentation()
                     .AddMeter(
                         "Microsoft.AspNetCore.Hosting",
                         "Microsoft.AspNetCore.Server.Kestrel",
@@ -48,7 +53,8 @@ internal static class Extensions
                     {
                         // Added so that we can add instruments for Runtime but it still fails after a while
                         configure.DisableTotalNameSuffixForCounters = true;
-                    });
+                    })
+                    .AddConsoleExporter();
             })
             .WithTracing(configure =>
             {
