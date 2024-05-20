@@ -17,16 +17,27 @@ internal static class Extensions
 
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
+        // Adds Serilog as my log provider and configure to log to File (Promtail uses the logs to read and then push to Loki),
+        // Console and Loki (Serilog pushes the logs directly as well). See AppSettings.Development.json. Also see how Loki and
+        // Promtail is setup.
         builder.Services.AddSerilog(configure => 
         {
             configure.ReadFrom.Configuration(builder.Configuration);
         });
 
+        // Captures the logs in OpenTelemetry format
         builder.Logging.AddOpenTelemetry(configure => {
             configure.IncludeScopes = true;
             configure.IncludeFormattedMessage = true;
+            configure.AddConsoleExporter();
+            configure.AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri("http://localhost:4318/v1/logs");
+                options.Protocol = OtlpExportProtocol.HttpProtobuf;
+        });
         });
 
+        // Captures metrics and traces in OpenTelemetry format to be exported
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(
                 serviceName: Environment.GetEnvironmentVariable("SERVICE_NAME") ?? builder.Environment.ApplicationName,
@@ -54,7 +65,12 @@ internal static class Extensions
                         // Added so that we can add instruments for Runtime but it still fails after a while
                         configure.DisableTotalNameSuffixForCounters = true;
                     })
-                    .AddConsoleExporter();
+                    .AddConsoleExporter()
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://localhost:4318/v1/metrics");
+                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    });
             })
             .WithTracing(configure =>
             {
@@ -79,7 +95,12 @@ internal static class Extensions
                     })
                     .AddHttpClientInstrumentation()
                     .AddSource(DiagnosticConfiguration.SourceName)
-                    .AddConsoleExporter();
+                    .AddConsoleExporter()
+                    .AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
+            });
             });
 
         builder.AddOpenTelemetryExporters();

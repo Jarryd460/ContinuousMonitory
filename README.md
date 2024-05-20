@@ -38,6 +38,10 @@ An introduction to Continuous Monitory with logging, metrics and tracing using O
     * Run ".\promtail-windows-amd64.exe --config.file=promtail-local-config.yaml" to start Promtail
     * You can also follow the instructions on https://grafana.com/docs/loki/latest/setup/install/local/.
 
+* Install OpenTelemetry Collector
+    * Run the below docker command inside OpenTelemetoryConnector folder in this repository.
+        * docker run -p 4317:4317 -p 4318:4318 --rm -v "C:/Users/Jarryd Deane/source/repos/ContinuousMonitory/OpenTelemetryCollector/collector-config.yaml:/etc/otelcol/config.yaml" otel/opentelemetry-collector
+
 ### ContinuousMonitory
 
 * Start project and it should bring up swagger on https://localhost:7298.
