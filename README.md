@@ -9,6 +9,9 @@ An introduction to Continuous Monitory with logging, metrics and tracing using O
 * Grafana is an open source visualization tool which can be used to view the captured metrics.
 * Loki is an open source log aggregation system designed to store and query logs from all your applications and infrastructure.
     * It works with Promtail as platform that sends logs to Loki. Loki is the logging engine.
+* OpenTelemetry Collector is a vendor-agnostic implementation of how to receive, process and export telemetry data. 
+It removes the need to run, operate, and maintain multiple agents/collectors. This works with improved scalability and 
+supports open source observability data formats (e.g. Jaeger, Prometheus, Fluent Bit, etc.) sending to one or more open source or commercial backends.
 
 * Install Grafana locally
     * Go to https://grafana.com/grafana/download and download Grafana Enterprise version. 
@@ -47,6 +50,8 @@ An introduction to Continuous Monitory with logging, metrics and tracing using O
 * Start project and it should bring up swagger on https://localhost:7298.
 * Navigate to Prometheus http://localhost:9090 and go to Status -> Targets.
 * Click on the application link with https://localhost:7298/ as it's url to view metrics.
+* After installing and running OpentTelemetry Collector and the ContinuousMonitory Api, logs, metrics and traces should be logged to the console
+as the received. 
 
 ### Setup Prometheus as data source on Grafana and import Dashboards
 
@@ -57,9 +62,16 @@ and copy the Dashboard ID or download the json.
 * Go back to Grafana and import the dashboard using the Dashboard ID or json.
 * You can import the dashboard by going to Dashboards -> New -> Import and specifying the code 19924 or 19925.
 
+### Setup Loki as data source on Grafana
+
+* Go to Grafana url and Home -> Connections -> Add new connections.
+* Specify the Prometheus url http://localhost:3100 and save and test connection.
+* Go to Explore and select Loki as datasource to start querying logs.
+
 ### References
 * https://grafana.com/docs/grafana/latest/setup-grafana/installation/windows/
 * https://prometheus.io/docs/prometheus/latest/getting_started/
 * https://prometheus.io/download/
 * https://grafana.com/orgs/dotnetteam
 * https://grafana.com/docs/loki/latest/setup/install/local/
+* https://opentelemetry.io/docs/collector/
