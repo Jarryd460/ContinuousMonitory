@@ -41,15 +41,18 @@ internal static class Extensions
 
         // Captures metrics and traces in OpenTelemetry format to be exported
         builder.Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(
-                serviceName: Environment.GetEnvironmentVariable("SERVICE_NAME") ?? builder.Environment.ApplicationName,
-                serviceVersion: System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) // SemVer
-            )
-            .AddAttributes(new Dictionary<string, object>
-                {
-                    { "host.name", Environment.MachineName }
-                })
-            )
+            .ConfigureResource(resource =>
+            {
+                resource
+                    .AddService(
+                        serviceName: Environment.GetEnvironmentVariable("SERVICE_NAME") ?? builder.Environment.ApplicationName,
+                        serviceVersion: System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) // SemVer
+                    )
+                    .AddAttributes(new Dictionary<string, object>
+                    {
+                        { "host.name", Environment.MachineName }
+                    });
+            })
             .WithMetrics(configure =>
             {
                 configure
@@ -102,7 +105,7 @@ internal static class Extensions
                     {
                         options.Endpoint = new Uri("http://localhost:4318/v1/traces");
                         options.Protocol = OtlpExportProtocol.HttpProtobuf;
-            });
+                    });
             });
 
         builder.AddOpenTelemetryExporters();
