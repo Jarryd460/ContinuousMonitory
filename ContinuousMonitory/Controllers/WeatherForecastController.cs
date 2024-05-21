@@ -26,7 +26,7 @@ namespace ContinuousMonitory.Controllers
             _logger.LogInformation("Retrieving weather forecasts");
 
             // Starts a trace
-            using var activity = DiagnosticConfiguration.ActivitySource.StartActivity(DiagnosticConfiguration.SourceName);
+            using var activity = DiagnosticConfiguration.ActivitySource.StartActivity("StartLoadingWeather");
 
             var weathers = Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -41,7 +41,7 @@ namespace ContinuousMonitory.Controllers
             // Adds an event to the trace with some tags
             activity?.AddEvent(new ActivityEvent("Load Weather",
                 tags: new ActivityTagsCollection(new[] { KeyValuePair.Create<string, object?>("Count", weathers.Count()) })));
-            activity?.AddTag("weather.count", weathers.Count());
+            activity?.AddTag("weather.miche", "Miche");
             activity?.AddTag("otel.status_code", "OK");
             activity?.AddTag("otel.status_description", "Load Successfully");
 
@@ -60,7 +60,7 @@ namespace ContinuousMonitory.Controllers
         {
             try
             {
-                DiagnosticConfiguration.ActivitySource.StartActivity(DiagnosticConfiguration.SourceName);
+                using var activity = DiagnosticConfiguration.ActivitySource.StartActivity("FailNow");
                 throw new Exception("Testing tracing");
             }
             catch (Exception ex)

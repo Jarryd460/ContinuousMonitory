@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Logs;
+﻿using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -17,25 +18,26 @@ internal static class Extensions
 
     public static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
-        // Adds Serilog as my log provider and configure to log to File (Promtail uses the logs to read and then push to Loki),
-        // Console and Loki (Serilog pushes the logs directly as well). See AppSettings.Development.json. Also see how Loki and
-        // Promtail is setup.
+        // Adds Serilog as my log provider and configure to log to File (Promtail uses the logs to read and then push to Loki), Console, Loki
+        // (Serilog pushes the logs directly as well) and OpenTelemetry Collector (see README.md to see how to get it running).
+        // See AppSettings.Development.json. Also see how Loki and Promtail is setup.
         builder.Services.AddSerilog(configure => 
         {
             configure.ReadFrom.Configuration(builder.Configuration);
         });
 
-        // Captures the logs in OpenTelemetry format
-        builder.Logging.AddOpenTelemetry(configure => {
-            configure.IncludeScopes = true;
-            configure.IncludeFormattedMessage = true;
-            configure.AddConsoleExporter();
-            configure.AddOtlpExporter(options =>
-            {
-                options.Endpoint = new Uri("http://localhost:4318/v1/logs");
-                options.Protocol = OtlpExportProtocol.HttpProtobuf;
-        });
-        });
+        // The built-in logging can also send telemetry data but requires Serilog to be removed/commented out
+        //builder.Logging.AddOpenTelemetry(options => {
+        //    options.IncludeFormattedMessage = true;
+        //    options.IncludeScopes = true;
+        //    options
+        //        .AddConsoleExporter()
+        //        .AddOtlpExporter(options =>
+        //        {
+        //            options.Endpoint = new Uri("http://localhost:4318/v1/logs");
+        //            options.Protocol = OtlpExportProtocol.HttpProtobuf;
+        //        });
+        //});
 
         // Captures metrics and traces in OpenTelemetry format to be exported
         builder.Services.AddOpenTelemetry()
@@ -81,7 +83,7 @@ internal static class Extensions
                 configure
                     .AddAspNetCoreInstrumentation(options =>
                     {
-                        options.Filter = (request) => !request.Request.Path.ToUriComponent().Contains("index.html", StringComparison.OrdinalIgnoreCase) ||
+                        options.Filter = (request) => !request.Request.Path.ToUriComponent().Contains("index.html", StringComparison.OrdinalIgnoreCase) &&
                             !request.Request.Path.ToUriComponent().Contains("swagger", StringComparison.OrdinalIgnoreCase);
                     })
                     .AddSqlClientInstrumentation(options =>
