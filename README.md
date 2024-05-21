@@ -75,3 +75,4 @@ and copy the Dashboard ID or download the json.
 * https://grafana.com/orgs/dotnetteam
 * https://grafana.com/docs/loki/latest/setup/install/local/
 * https://opentelemetry.io/docs/collector/
+* https://opentelemetry.io/docs/languages/net/instrumentation/

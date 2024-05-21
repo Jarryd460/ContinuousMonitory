@@ -7,9 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContinuousMonitory", "Conti
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CBF630B1-7802-49DE-9436-89026760CB89}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\Downloads\loki-windows-amd64.exe\loki-local-config.yaml = ..\..\..\Downloads\loki-windows-amd64.exe\loki-local-config.yaml
+		OpenTelemetryCollector\collector-config.yaml = OpenTelemetryCollector\collector-config.yaml
+		loki-local-config.yaml = loki-local-config.yaml
 		prometheus.yml = prometheus.yml
-		..\..\..\Downloads\loki-windows-amd64.exe\promtail-local-config.yaml = ..\..\..\Downloads\loki-windows-amd64.exe\promtail-local-config.yaml
+		promtail-local-config.yaml = promtail-local-config.yaml
 		README.md = README.md
 	EndProjectSection
 EndProject
