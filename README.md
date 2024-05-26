@@ -44,6 +44,9 @@ supports open source observability data formats (e.g. Jaeger, Prometheus, Fluent
 * Install OpenTelemetry Collector
     * Run the below docker command inside OpenTelemetoryConnector folder in this repository.
         * docker run -p 4317:4317 -p 4318:4318 --rm -v "C:/Users/Jarryd Deane/source/repos/ContinuousMonitory/OpenTelemetryCollector/collector-config.yaml:/etc/otelcol/config.yaml" otel/opentelemetry-collector
+    * In order for Prometheus to scrap the OpenTelemetoryConnector you need to expose ports 8888 (not really needed) and 8889 (metrics in Prometheus format).
+        * docker run -p 4317:4317 -p 4318:4318 -p 8888:8888 -p 8889:8889 --rm -v "C:/Users/Jarryd Deane/source/repos/ContinuousMonitory/OpenTelemetryCollector/collector-config.yaml:/etc/otelcol/config.yaml" otel/opentelemetry-collector
+        * The collector-config.yaml is not always updated when making changes. Rename the fie and update command above to ensure updated file is used. 
 
 ### ContinuousMonitory
 

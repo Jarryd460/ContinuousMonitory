@@ -65,11 +65,12 @@ internal static class Extensions
                     .AddAspNetCoreInstrumentation()
                     .AddProcessInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddPrometheusExporter(configure =>
-                    {
-                        // Added so that we can add instruments for Runtime but it still fails after a while
-                        configure.DisableTotalNameSuffixForCounters = true;
-                    })
+                    // Uncomment this code in order for metrics to made available in a format for Prometheus via this Api
+                    //.AddPrometheusExporter(configure =>
+                    //{
+                    //    // Added so that we can add instruments for Runtime but it still fails after a while
+                    //    configure.DisableTotalNameSuffixForCounters = true;
+                    //})
                     .AddConsoleExporter()
                     .AddOtlpExporter(options =>
                     {
@@ -108,28 +109,13 @@ internal static class Extensions
                     });
             });
 
-        builder.AddOpenTelemetryExporters();
-
-        return builder;
-    }
-
-    public static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
-        {
-            builder.Services.Configure<OpenTelemetryLoggerOptions>(logger => logger.AddOtlpExporter());
-            builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter());
-            builder.Services.ConfigureOpenTelemetryTracerProvider(tracer => tracer.AddOtlpExporter());
-        }
-
         return builder;
     }
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        app.MapPrometheusScrapingEndpoint();
+        // Uncomment this line to expose a /metrics url so Prometheus can scrap the metrics formatted by .AddPrometheusExporter
+        //app.MapPrometheusScrapingEndpoint();
 
         return app;
     }
